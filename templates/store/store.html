@@ -1,0 +1,108 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* Attractive Header Banner */
+    .store-banner {
+        padding: 80px 0;
+        background: linear-gradient(rgba(0, 102, 255, 0.7), rgba(0, 44, 155, 0.8)), 
+                    url("{% static 'images/banners/store-bg.jpg' %}") no-repeat center center;
+        background-size: cover;
+    }
+    .store-title { color: #fff; font-size: 3rem; font-weight: 800; text-shadow: 2px 2px 10px rgba(0,0,0,0.2); }
+    
+    /* Sidebar Styling */
+    .sidebar-parent-text { font-size: 1.1rem; font-weight: 700; color: #333; text-decoration: none !important; }
+    .sidebar-child-item { font-size: 0.95rem; color: #666; display: flex; align-items: center; padding: 6px 0; text-decoration: none !important; }
+    .sidebar-child-item:hover { color: #3167eb; }
+    .side-child-img { width: 30px; height: 30px; border-radius: 4px; object-fit: cover; margin-right: 10px; }
+</style>
+
+<section class="store-banner">
+    <div class="container text-center">
+        <h2 class="store-title">Our Products</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb d-inline-flex bg-transparent p-0">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-white-50">Home</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">Products</li>
+            </ol>
+        </nav>
+    </div> 
+</section>
+
+<section class="section-content padding-y">
+<div class="container">
+<div class="row">
+    <aside class="col-md-3">
+        <div class="card shadow-sm">
+            <header class="card-header bg-white">
+                <h6 class="title font-weight-bold">Filter Categories</h6>
+            </header>
+            <div class="filter-content px-3 py-3" id="sidebarAccordion">
+                <ul class="list-menu list-unstyled">
+                {% for category in links %}
+                    {% if not category.parent %}
+                    <li class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{{ category.get_url }}" class="sidebar-parent-text">{{ category.category_name }}</a>
+                            {% if category.children.all %}
+                                <a data-toggle="collapse" data-parent="#sidebarAccordion" href="#side-sub-{{ category.id }}" class="text-muted">
+                                    <i class="fa fa-plus-circle"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                        
+                        {% if category.children.all %}
+                        <div class="collapse mt-2 pl-3 border-left" id="side-sub-{{ category.id }}" data-parent="#sidebarAccordion">
+                            {% for subcategory in category.children.all %}
+                                <a href="{{ subcategory.get_url }}" class="sidebar-child-item">
+                                    {% if subcategory.image %}
+                                        <img src="{{ subcategory.image.url }}" class="side-child-img">
+                                    {% endif %}
+                                    {{ subcategory.category_name }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </li>
+                    {% endif %}
+                {% endfor %}
+                </ul>
+            </div>
+        </div> 
+    </aside> 
+
+    <main class="col-md-9">
+        <header class="border-bottom mb-4 pb-3">
+            <div class="form-inline">
+                <span class="mr-md-auto font-weight-bold">{{ product_count }} Items found </span>
+            </div>
+        </header>
+
+        <div class="row">
+            {% for product in products %}
+            <div class="col-md-4">
+                <figure class="card card-product-grid shadow-sm">
+                    <div class="img-wrap"> 
+                        <a href="{{ product.get_url }}"> 
+                            <img src="{{ product.images.url }}">
+                        </a>
+                    </div> 
+                    <figcaption class="info-wrap border-top">
+                        <a href="{{ product.get_url }}" class="title font-weight-bold">{{ product.product_name }}</a>
+                        <div class="price-wrap mt-2">
+                            <span class="price" style="font-size: 1.2rem; color: #3167eb;">{{ product.price }} QAR</span>
+                        </div> 
+                        <a href="#" class="btn btn-block btn-primary">Add to cart </a>	
+                    </figcaption>
+                </figure>
+            </div> 
+            {% endfor %}
+        </div> 
+    </main> 
+</div>
+</div> 
+</section>
+{% endblock %}

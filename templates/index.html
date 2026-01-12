@@ -1,0 +1,81 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* Attractive Header Banner */
+    .store-banner {
+        padding: 80px 0;
+        background: linear-gradient(rgba(0, 102, 255, 0.7), rgba(0, 44, 155, 0.8)), 
+                    url("{% static 'images/banners/store-bg.jpg' %}") no-repeat center center;
+        background-size: cover;
+    }
+    .store-title { color: #fff; font-size: 3rem; font-weight: 800; text-shadow: 2px 2px 10px rgba(0,0,0,0.2); }
+    
+    /* Sidebar Styling */
+    .sidebar-parent-text { font-size: 1.1rem; font-weight: 700; color: #333; text-decoration: none !important; }
+    .sidebar-child-item { font-size: 0.95rem; color: #666; display: flex; align-items: center; padding: 6px 0; text-decoration: none !important; }
+    .sidebar-child-item:hover { color: #3167eb; }
+    .side-child-img { width: 30px; height: 30px; border-radius: 4px; object-fit: cover; margin-right: 10px; }
+</style>
+
+
+
+
+<!-- ========================= SECTION MAIN ========================= -->
+<section class="store-banner">
+    <div class="container text-center">
+        <h2 class="store-title">Our Products</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb d-inline-flex bg-transparent p-0">
+				<li class="breadcrumb-item"><a href="{% url 'store' %}" class="text-white-50">Products</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">Home</li>
+            </ol>
+        </nav>
+    </div> 
+</section>
+<!-- ========================= SECTION MAIN END// ========================= -->
+
+<!-- ========================= SECTION  ========================= -->
+<section class="section-name padding-y-sm">
+<div class="container-fluid ">
+
+<header class="section-heading">
+	<a href="{% url 'store' %}" class="btn btn-outline-primary float-right">See all</a>
+	<h3 class="section-title">Popular products</h3>
+</header><!-- sect-heading -->
+
+	
+<div class="row">
+    {% for product in products %}
+    <div class="col-md-3">
+        <div class="card card-product-grid">
+            <a href="{{ product.get_url }}" class="img-wrap"> 
+                <img src="{{ product.images.url }}"> 
+            </a>
+            <figcaption class="info-wrap">
+                <a href="{{ product.get_url }}" class="title">{{ product.product_name }}</a>
+                <div class="price mt-1">{{ product.price }} QAR</div>
+            </figcaption>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center">
+        <h4 class="text-muted">No products found. Please check Admin "Is Available" status.</h4>
+    </div>
+    {% endfor %}
+</div>
+</div><!-- container // -->
+</section>
+<!-- ========================= SECTION  END// ========================= -->
+
+
+
+
+
+
+</body>
+</html>
+
+{% endblock %}
