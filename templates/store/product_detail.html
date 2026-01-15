@@ -9,72 +9,103 @@
 
 <div class="card">
 	<div class="row no-gutters">
-		<aside class="col-md-6">
-<article class="gallery-wrap"> 
-	<div class="img-big-wrap" style="text-align: center; display: flex; align-items: center; justify-content: center; min-height: 450px; background-color: #fff;">
-	   <a href="#"><img src="{{ single_product.images.url }}" style="max-width: 100%; max-height: 400px; width: auto;"></a>
-	</div> </article> </aside>
-		<main class="col-md-6 border-left">
-<article class="content-body">
+		<aside class="col-md-6 border-right-0">
+            <article class="gallery-wrap"> 
+                <div class="img-big-wrap d-flex align-items-center justify-content-center"
+                    style="height: 500px !important; min-height: 500px !important; background-color: #ffffff; border: none !important; outline: none !important;">
+                    
+                    <a href="{{ single_product.images.url }}" target="_blank" class="d-flex align-items-center justify-content-center w-100 h-100">
+                        <img src="{{ single_product.images.url }}" 
+                            style="max-height: 450px; max-width: 95%; width: auto; object-fit: contain; margin: auto !important; display: block !important;">
+                    </a>
 
-<h2 class="title">{{ single_product.product_name }}</h2>
+                </div> 
+            </article> 
+        </aside>
+	<main class="col-md-6"> 
+        <form id="add-to-cart-form" action="{% url 'add_cart' single_product.id %}" method="POST" >
+        {% csrf_token %}
+        <article class="content-body p-4"> <span class="text-uppercase font-weight-bold text-muted small" style="letter-spacing: 1px;"> General Products </span>
+            
+            <h2 class="title mt-1 mb-3" style="font-weight: 700; color: #212529;">{{ single_product.product_name }}</h2>
+            
+            <div class="mb-4"> 
+                <var class="price h3" style="color: #3167eb; font-weight: 700;">{{ single_product.price }} <span style="font-size: 1rem;">QAR</span></var> 
+                <span class="text-success ml-2 small"><i class="fa fa-check-circle"></i> In Stock</span>
+            </div> 
 
-<div class="mb-3"> 
-	<var class="price h4" style="color: #3167eb;">{{ single_product.price }} QAR</var> 
+            <div class="product-description text-secondary" style="line-height: 1.6; font-size: 0.95rem;">
+                {{ single_product.description|linebreaks }}
+            </div>
+            
+            <hr class="my-4">
+
+            {% if single_product.variation_set.all %}
+                {% regroup single_product.variation_set.all by variation_category as variation_list %} 
+
+                {% for category in variation_list %} 
+                <div class="row mb-3">
+                    <div class="item-option-select col-md-12">
+                        <h6 class="label-muted mb-2" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase;">Select {{ category.grouper }}</h6>
+                        
+                        <div class="dropdown">
+                            <button class="btn btn-light border dropdown-toggle w-100 text-left d-flex justify-content-between align-items-center" 
+                                    type="button" data-toggle="dropdown" style="background: #fff; padding: 10px 15px;">
+                                <span>Choose up to {{ category.list.0.selection_limit }}</span>
+                            </button>
+
+                            <div class="dropdown-menu p-3 shadow-lg w-100" style="border: none; border-radius: 8px;">
+                                {% for item in category.list %}
+                                <div class="custom-control custom-checkbox mb-2 p-2 rounded hover-bg-light">
+                                    <input type="checkbox" 
+                                        name="{{ category.grouper | lower }}" 
+                                        value="{{ item.variation_value | lower }}" 
+                                        class="custom-control-input variation-checkbox" 
+                                        id="check-{{ item.id }}"
+                                        data-limit="{{ category.list.0.selection_limit }}">
+                                    <label class="custom-control-label d-block cursor-pointer" for="check-{{ item.id }}">
+                                        {{ item.variation_value | capfirst }}
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-2">
+                            <small class="text-muted">Selections made:</small>
+                            <small class="badge badge-pill badge-primary"><span id="count-{{ category.grouper | lower }}">0</span> / {{ category.list.0.selection_limit }}</small>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="mt-4">
+                {% if single_product.stock <= 0 %}
+                    <button class="btn btn-light btn-lg btn-block disabled" style="border: 2px dashed #ccc;">
+                        <i class="fa fa-bell"></i> Notify Me When Available
+                    </button>
+                {% else %}
+                    <button type="submit" class="btn btn-primary btn-lg btn-block shadow" style="border-radius: 8px; font-weight: 600; padding: 12px;">
+                        <i class="fas fa-shopping-cart mr-2"></i> ADD TO CART
+                    </button>
+                {% endif %}
+            </div>
+
+            <div class="mt-4 pt-3 border-top">
+                <p class="small text-muted mb-0">
+                    <i class="fa fa-truck mr-2"></i> Fast Delivery in Qatar 
+                    <span class="mx-2">|</span> 
+                    <i class="fa fa-undo mr-2"></i> 7 Days Easy Return
+                </p>
+            </div>
+
+        </article> 
+        </form>
+    </main> 
+	</div> 
 </div> 
-
-<div class="product-description">
-    {{ single_product.description|linebreaks }}
-</div>
-
-
-<hr>
-	<div class="row">
-		<div class="item-option-select">
-			<h6>Choose Color</h6>
-			<div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons">
-			  <label class="btn btn-light">
-			    <input type="radio" name="radio_color"> Silver
-			  </label>
-			  <label class="btn btn-light">
-			    <input type="radio" name="radio_color" > Gray
-			  </label>
-			  <label class="btn btn-light active">
-			    <input type="radio" name="radio_color" checked> Gold
-			  </label>
-			  <label class="btn btn-light">
-			    <input type="radio" name="radio_color"> Black
-			  </label>
-			</div> 
-		</div>
-	</div> 
-	<div class="row">
-		<div class="item-option-select">
-			<h6>Select Size</h6>
-			<div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons">
-			  <label class="btn btn-light">
-			    <input type="radio" name="radio_size"> S
-			  </label>
-			  <label class="btn btn-light active">
-			    <input type="radio" name="radio_size" checked> M
-			  </label>
-			  <label class="btn btn-light">
-			    <input type="radio" name="radio_size"> L
-			  </label>
-			  <label class="btn btn-light">
-			    <input type="radio" name="radio_size"> XL
-			  </label>
-			</div> 
-		</div>
-	</div> 
-	<hr>
-    {% if single_product.stock <= 0 %}
-    <h5 class="badge bg-danger" style="font-size: 1.1rem; padding: 10px;">Out of stock</h5>
-    {% else %}
-        <a href="#" class="btn btn-primary"> <span class="text">Add to cart</span> <i class="fas fa-shopping-cart"></i> </a>
-    {% endif %}
-
-</article> </main> </div> </div> <br>
+<br>
 
 <div class="row">
 	<div class="col-md-9">
@@ -95,6 +126,57 @@
 				</p>	
 			</div>
 		</article>
-	</div> </div> </div> </section>
+	</div> 
+</div> 
+</div> 
+</section>
+<script>
+document.getElementById('add-to-cart-form').addEventListener('submit', function(e) {
+    // 1. Get all unique variation categories (e.g., 'color')
+    const checkboxes = document.querySelectorAll('.variation-checkbox');
+    const categories = [...new Set([...checkboxes].map(c => c.name))];
+    
+    let allValid = true;
+    let errorMessages = [];
 
+    categories.forEach(name => {
+        const checkedOptions = document.querySelectorAll(`input[name="${name}"]:checked`);
+        const firstInCat = document.querySelector(`input[name="${name}"]`);
+        const limit = parseInt(firstInCat.getAttribute('data-limit'));
+
+        // 2. The Logic: If nothing is selected, or count doesn't match the limit
+        if (checkedOptions.length === 0) {
+            allValid = false;
+            errorMessages.push(`Please select ${limit} option for ${name.toUpperCase()}.`);
+        } else if (checkedOptions.length !== limit) {
+            allValid = false;
+            errorMessages.push(`You must select exactly ${limit} options for ${name.toUpperCase()}.`);
+        }
+    });
+
+    // 3. THE FIX: If not valid, stop the form from going to the cart!
+    if (!allValid) {
+        e.preventDefault(); // This stops the "Add to Cart" action immediately
+        alert(errorMessages.join('\n'));
+    }
+});
+
+// This part handles the visual counting and the "Too many" alert
+document.querySelectorAll('.variation-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+        const name = this.getAttribute('name');
+        const limit = parseInt(this.getAttribute('data-limit'));
+        const checkedCount = document.querySelectorAll(`input[name="${name}"]:checked`).length;
+
+        if (checkedCount > limit) {
+            alert(`Limit reached! You can only select ${limit} items.`);
+            this.checked = false;
+        }
+        
+        // Update the counter text
+        const counter = document.getElementById(`count-${name}`);
+        if(counter) counter.innerText = document.querySelectorAll(`input[name="${name}"]:checked`).length;
+    });
+});
+</script>
 {% endblock %}

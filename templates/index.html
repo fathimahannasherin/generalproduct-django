@@ -49,19 +49,41 @@
 	
 <div class="row">
     {% for product in products %}
-    <div class="col-md-3">
-        <div class="card card-product-grid">
-            <a href="{{ product.get_url }}" class="img-wrap"> 
-                <img src="{{ product.images.url }}"> 
-            </a>
-            <figcaption class="info-wrap">
-                <a href="{{ product.get_url }}" class="title">{{ product.product_name }}</a>
-                <div class="price mt-1">{{ product.price }} QAR</div>
+    <div class="col-md-4 col-sm-6">
+        <div class="card card-product-grid shadow-sm text-center">
+            
+            <div class="img-wrap d-flex align-items-center justify-content-center p-3" 
+                 style="height: 250px; background-color: #b9bfceff overflow: hidden;"> 
+                <a href="{{ product.get_url }}"> 
+                    <img src="{{ product.images.url }}" style="max-height: 100%; max-width: 100%; width: auto; object-fit: contain;"> 
+                </a>
+            </div>
+
+            <figcaption class="info-wrap border-top p-3">
+                <a href="{{ product.get_url }}" class="title font-weight-bold d-block mb-2">{{ product.product_name }}</a>
+                
+                <div class="price-wrap mb-3">
+                    <span class="price" style="font-size: 1.1rem; color: #3167eb; font-weight: 600;">{{ product.price }} QAR</span>
+                </div>
+
+                {% if product.stock <= 0 %}
+                    <a href="#" class="btn btn-block btn-danger disabled"> Out of Stock </a>
+                {% else %}
+                    {% if product.variation_set.all %}
+                        <a href="{{ product.get_url }}" class="btn btn-block btn-primary">
+                            <i class="fa fa-list"></i> Select Options 
+                        </a>
+                    {% else %}
+                        <a href="{% url 'add_cart' product.id %}" class="btn btn-block btn-primary">
+                            <i class="fa fa-shopping-cart"></i> Add to Cart
+                        </a>
+                    {% endif %}
+                {% endif %}
             </figcaption>
         </div>
     </div>
     {% empty %}
-    <div class="col-12 text-center">
+    <div class="col-12 text-center py-5">
         <h4 class="text-muted">No products found. Please check Admin "Is Available" status.</h4>
     </div>
     {% endfor %}

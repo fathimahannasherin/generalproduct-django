@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product
+from .models import Product,Variation
 
 # Register your models here.
 class ProductAdmin(admin.ModelAdmin):
@@ -11,3 +11,10 @@ class ProductAdmin(admin.ModelAdmin):
 
 # Make sure you register the model with the Admin class
 admin.site.register(Product, ProductAdmin)
+
+class VariationAdmin(admin.ModelAdmin):
+    list_display = ('product', 'variation_category', 'variation_value', 'is_active')
+    list_editable = ('is_active',)
+    list_filter = ('product', 'variation_category', 'variation_value')
+
+admin.site.register(Variation, VariationAdmin)
